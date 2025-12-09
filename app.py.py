@@ -2,10 +2,11 @@ import streamlit as st
 import math
 
 # --- CONFIGURAÇÃO DA PÁGINA ---
-st.set_page_config(page_title="Calc. Elétrica - Prof. Manoel", page_icon="⚡")
+# O título da aba do navegador também foi atualizado
+st.set_page_config(page_title="Calc. Eletricista - Prof. Manoel", page_icon="⚡")
 
 # --- CABEÇALHO PERSONALIZADO ---
-st.title("⚡ Calculadora Lei de Ohm")
+st.title("⚡ Calculadora do Eletricista")
 st.subheader("Desenvolvido por Prof. Manoel Mendes")
 st.markdown("---") # Linha divisória visual
 st.write("Bem-vindo! Selecione a ferramenta desejada no menu lateral (canto esquerdo).")
