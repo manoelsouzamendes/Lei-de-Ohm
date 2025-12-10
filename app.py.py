@@ -86,7 +86,7 @@ elif menu == "2. Resistividade (2ª Lei de Ohm)":
     st.header("📏 2ª Lei de Ohm (Resistência do Fio)")
     
     st.markdown("""
-    A resistência elétrica de um condutor depende do material ($rho$), do comprimento ($L$) e da área da seção transversal ($A$).
+    A resistência elétrica de um condutor depende do material ($ρ rô$), do comprimento ($L$) e da área da seção transversal ($A$).
     """)
     st.latex(r"R = \frac{\rho \cdot L}{A}")
     
@@ -180,4 +180,5 @@ elif menu == "4. Simulador de Conta de Luz":
 # --- RODAPÉ ---
 st.markdown("---")
 st.markdown("<div style='text-align: center; color: grey;'>© 2025 - Prof. Manoel Mendes</div>", unsafe_allow_html=True)
+
 
