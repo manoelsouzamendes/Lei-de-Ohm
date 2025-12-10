@@ -18,7 +18,8 @@ with st.sidebar:
             "1. Lei de Ohm & Potência (1ª Lei)", 
             "2. Resistividade (2ª Lei de Ohm)", 
             "3. Dimensionamento de Cabos", 
-            "4. Simulador de Conta de Luz"
+            "4. Queda de Tensão (Distância)",  # NOVO MÓDULO
+            "5. Simulador de Conta de Luz"
         ]
     )
     st.markdown("---")
@@ -28,7 +29,7 @@ with st.sidebar:
 # MÓDULO 1: 1ª LEI DE OHM & POTÊNCIA
 # =========================================================
 if menu == "1. Lei de Ohm & Potência (1ª Lei)":
-    st.header(" 1ª Lei de Ohm e Potência")
+    st.header("🔌 1ª Lei de Ohm e Potência")
     st.markdown("Preencha **dois valores** conhecidos para descobrir os outros dois.")
     
     col1, col2 = st.columns(2)
@@ -67,7 +68,6 @@ if menu == "1. Lei de Ohm & Potência (1ª Lei)":
                     formula_usada = r"V = \sqrt{P \cdot R} \quad e \quad I = \sqrt{\frac{P}{R}}"
                 
                 st.success("✅ Resultados Encontrados!")
-                st.markdown("##### 📝 Fórmulas Aplicadas:")
                 st.latex(formula_usada)
                 
                 c1, c2, c3, c4 = st.columns(4)
@@ -77,52 +77,38 @@ if menu == "1. Lei de Ohm & Potência (1ª Lei)":
                 c4.metric("Potência (P)", f"{p:.2f} W")
 
         except ZeroDivisionError: 
-            st.error("Erro Matemático: Divisão por zero detectada.")
+            st.error("Erro Matemático: Divisão por zero.")
 
 # =========================================================
-# MÓDULO 2: 2ª LEI DE OHM (VISUAL NOVO)
+# MÓDULO 2: 2ª LEI DE OHM
 # =========================================================
 elif menu == "2. Resistividade (2ª Lei de Ohm)":
     st.header("📏 2ª Lei de Ohm (Resistência do Fio)")
-    
-    st.markdown("""
-    A resistência elétrica de um condutor depende do material ($ρ$), do comprimento ($L$) e da área da seção transversal ($A$).
-    """)
     st.latex(r"R = \frac{\rho \cdot L}{A}")
     
     col_input, col_ref = st.columns([1.5, 1])
-    
     with col_input:
-        material = st.selectbox("Selecione o Material:", ["Cobre", "Alumínio", "Ouro", "Prata"])
+        material = st.selectbox("Selecione o Material:", ["Cobre", "Alumínio", "Ouro"])
         comprimento = st.number_input("Comprimento do condutor (metros):", min_value=0.0, step=1.0)
         secao = st.number_input("Seção Transversal / Bitola (mm²):", min_value=0.0, step=0.5, value=2.5)
-    
     with col_ref:
         st.markdown("##### 📋 Resistividade (ρ)")
-        materiais = {"Cobre": 0.0172, "Alumínio": 0.0282, "Ouro": 0.0244, "Prata": 0.0159}
+        materiais = {"Cobre": 0.0172, "Alumínio": 0.0282, "Ouro": 0.0244}
         rho = materiais[material]
-        
         st.info(f"Usando **{material}**:\n\n **{rho}** Ω.mm²/m")
 
     if st.button("Calcular Resistência", type="primary"):
         if secao > 0:
             resistencia_fio = (rho * comprimento) / secao
-            
             st.markdown("---")
-            
-            # --- AQUI ESTÁ A MUDANÇA VISUAL ---
-            # Cria um box visual com HTML para destacar o número
             st.markdown(f"""
                 <div style="text-align: center; border: 2px solid #4CAF50; padding: 20px; border-radius: 10px; background-color: #f9fff9;">
                     <p style="color: #4CAF50; font-size: 20px; margin-bottom: 5px;"><b>Resistência Total do Fio (R)</b></p>
                     <p style="color: #2E7D32; font-size: 50px; font-weight: bold; margin: 0;">{resistencia_fio:.4f} Ω</p>
                 </div>
             """, unsafe_allow_html=True)
-            # ----------------------------------
-            
-            st.write("") # Espaço vazio
-            st.info(f"💡 **Análise:** Se passar 10A neste fio, a queda de tensão será de **{resistencia_fio * 10:.2f} Volts**.")
-            
+            st.write("")
+            st.info(f"💡 Se passar 10A neste fio, perderá **{resistencia_fio * 10:.2f} Volts** no caminho.")
         else:
             st.error("A seção (bitola) não pode ser zero.")
 
@@ -138,25 +124,80 @@ elif menu == "3. Dimensionamento de Cabos":
     if st.button("Dimensionar Cabo"):
         tabela = {1.5: 17.5, 2.5: 24.0, 4.0: 32.0, 6.0: 41.0, 10.0: 57.0, 16.0: 76.0, 25.0: 101.0, 35.0: 125.0, 50.0: 151.0}
         escolhido, cap = None, 0
-        
         for s, a in tabela.items():
             if a >= corrente_projeto:
                 escolhido, cap = s, a
                 break
-        
         st.divider()
         if escolhido:
             c1, c2 = st.columns(2)
             c1.success(f"✅ Cabo Ideal: **{escolhido} mm²**")
             c2.info(f"Capacidade Máxima: **{cap} A**")
         else:
-            st.error("⚠️ Corrente muito alta para cabos comuns nesta tabela.")
+            st.error("⚠️ Corrente muito alta para cabos comuns.")
 
 # =========================================================
-# MÓDULO 4: CONTA DE LUZ
+# MÓDULO 4: QUEDA DE TENSÃO (NOVO!)
 # =========================================================
-elif menu == "4. Simulador de Conta de Luz":
-    st.header("💸 4. Simulador de Custo de Energia")
+elif menu == "4. Queda de Tensão (Distância)":
+    st.header("📉 4. Cálculo de Queda de Tensão")
+    st.markdown("Verifique se a distância vai atrapalhar o funcionamento do equipamento.")
+    
+    # Explicação da Fórmula
+    st.caption("Fórmula baseada na queda por resistência do condutor:")
+    st.latex(r"\Delta V = \frac{2 \cdot \rho \cdot L \cdot I}{S}")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        sistema = st.radio("Sistema:", ["Monofásico (Fase+Neutro)", "Trifásico"])
+        tensao = st.selectbox("Tensão Nominal (V):", [127, 220, 380, 440])
+        distancia = st.number_input("Distância do Circuito (metros):", min_value=1.0, step=1.0, help="Comprimento do cabo do quadro até a carga")
+    
+    with c2:
+        corrente_carga = st.number_input("Corrente da Carga (A):", min_value=0.1, step=0.1)
+        secao_cabo = st.selectbox("Seção do Cabo (mm²):", [1.5, 2.5, 4.0, 6.0, 10.0, 16.0, 25.0, 35.0, 50.0])
+        mat = st.selectbox("Material:", ["Cobre", "Alumínio"])
+
+    if st.button("Calcular Queda"):
+        # Definição de constantes
+        rho = 0.0172 if mat == "Cobre" else 0.0282
+        
+        # Fator do sistema (2 para monofásico/bifásico, sqrt(3)=1.732 para trifásico)
+        fator = 2 if "Monofásico" in sistema else 1.73205
+        
+        # Cálculo da Queda em Volts (Delta V)
+        queda_volts = (fator * rho * distancia * corrente_carga) / secao_cabo
+        
+        # Cálculo da Porcentagem
+        queda_perc = (queda_volts / tensao) * 100
+        
+        # Tensão na carga
+        tensao_final = tensao - queda_volts
+
+        st.markdown("---")
+        
+        # Lógica do Semáforo (Limite aceitável 4% conforme NBR 5410 para terminais)
+        if queda_perc <= 4.0:
+            st.success(f"✅ **APROVADO!** A queda é de apenas {queda_perc:.2f}%")
+            cor_box = "#d4edda" # Verde claro
+            cor_texto = "#155724"
+        else:
+            st.error(f"❌ **CRÍTICO!** A queda é de {queda_perc:.2f}% (Acima de 4%)")
+            st.warning("⚠️ Sugestão: Aumente a bitola do cabo para reduzir a perda.")
+            cor_box = "#f8d7da" # Vermelho claro
+            cor_texto = "#721c24"
+
+        # Display Visual dos Resultados
+        col_res1, col_res2, col_res3 = st.columns(3)
+        col_res1.metric("Queda em Volts", f"{queda_volts:.2f} V")
+        col_res2.metric("Tensão na Carga", f"{tensao_final:.2f} V")
+        col_res3.metric("Queda Percentual", f"{queda_perc:.2f} %")
+
+# =========================================================
+# MÓDULO 5: CONTA DE LUZ
+# =========================================================
+elif menu == "5. Simulador de Conta de Luz":
+    st.header("💸 5. Simulador de Custo de Energia")
     
     c1, c2 = st.columns(2)
     with c1:
@@ -174,12 +215,8 @@ elif menu == "4. Simulador de Conta de Luz":
         col_m1, col_m2 = st.columns(2)
         col_m1.metric("Consumo (kWh)", f"{kwh:.2f} kWh")
         col_m2.metric("Custo Estimado", f"R$ {total:.2f}")
-        
         st.caption(f"Cálculo: ({w}W x {h}h x {d}d) ÷ 1000 = {kwh} kWh")
 
 # --- RODAPÉ ---
 st.markdown("---")
 st.markdown("<div style='text-align: center; color: grey;'>© 2025 - Prof. Manoel Mendes</div>", unsafe_allow_html=True)
-
-
-
