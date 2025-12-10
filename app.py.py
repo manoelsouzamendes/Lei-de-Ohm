@@ -36,7 +36,7 @@ with st.sidebar:
 # MÓDULO 1: 1ª LEI DE OHM & POTÊNCIA (Melhorado)
 # =========================================================
 if menu == "1. Lei de Ohm & Potência (1ª Lei)":
-    st.header("🔌 1ª Lei de Ohm e Potência")
+    st.header(" 1ª Lei de Ohm e Potência")
     st.markdown("Preencha **dois valores** conhecidos para descobrir os outros dois.")
     
     # Layout em colunas para input
@@ -205,3 +205,4 @@ elif menu == "4. Simulador de Conta de Luz":
 # --- RODAPÉ ---
 st.markdown("---")
 st.markdown("<div style='text-align: center; color: grey;'>© 2025 - Prof. Manoel Mendes | Ferramenta Educacional</div>", unsafe_allow_html=True)
+
